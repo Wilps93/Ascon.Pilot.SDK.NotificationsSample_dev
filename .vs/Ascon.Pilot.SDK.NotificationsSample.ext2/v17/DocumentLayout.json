@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D3BB94E3-CD3B-E870-9274-68074BE83ACD}|Ascon.Pilot.SDK.NotificationsSample.ext2.csproj|c:\\users\\dokuchaev_ts\\desktop\\ascon.pilot.sdk.notificationssample\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3BB94E3-CD3B-E870-9274-68074BE83ACD}|Ascon.Pilot.SDK.NotificationsSample.ext2.csproj|solutionrelative:main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Main.cs",
+              "DocumentMoniker": "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\Main.cs",
+              "RelativeDocumentMoniker": "Main.cs",
+              "ToolTip": "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\Main.cs",
+              "RelativeToolTip": "Main.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-28T00:28:47.498Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

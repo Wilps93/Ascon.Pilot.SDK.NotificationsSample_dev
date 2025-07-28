@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="DeadlineChanged" xml:space="preserve"><value>изменил(а) срок выполнения задания</value></data>
+  <data name="AccessChanged" xml:space="preserve"><value>изменил(а) права доступа</value></data>
+  <data name="StateInProgress" xml:space="preserve"><value>взял(а) в работу задание</value></data>
+  <data name="TaskAttachmentChanged" xml:space="preserve"><value>изменил(а) вложения в задании</value></data>
+  <data name="Unlocked" xml:space="preserve"><value>разблокировал(а)</value></data>
+  <data name="StateOnValidation" xml:space="preserve"><value>выполнил(а) задание</value></data>
+  <data name="StateAssigned" xml:space="preserve"><value>выдал(а) задание</value></data>
+  <data name="AttributeChanged" xml:space="preserve"><value>изменил(а) атрибут</value></data>
+  <data name="AnnotationAdded" xml:space="preserve"><value>добавил(а) замечания</value></data>
+  <data name="Deleted" xml:space="preserve"><value>удалил(а)</value></data>
+  <data name="AnnotationMessageChanged" xml:space="preserve"><value>изменил(а) ответ в замечании</value></data>
+  <data name="Created" xml:space="preserve"><value>создал(а)</value></data>
+  <data name="TaskCreated" xml:space="preserve"><value>создал(а) задание</value></data>
+  <data name="TaskTitleChanged" xml:space="preserve"><value>изменил(а) заголовок задания</value></data>
+  <data name="Restored" xml:space="preserve"><value>восстановил(а) из корзины</value></data>
+  <data name="Moved" xml:space="preserve"><value>переместил(а)</value></data>
+  <data name="AnnotationDeleted" xml:space="preserve"><value>удалил(а) замечания</value></data>
+  <data name="TaskDescriptionChanged" xml:space="preserve"><value>изменил(а) описание задания</value></data>
+  <data name="FileChanged" xml:space="preserve"><value>изменил(а)</value></data>
+  <data name="StateRevoked" xml:space="preserve"><value>отозвал(а) задание</value></data>
+  <data name="Unfreezed" xml:space="preserve"><value>разморозил(а)</value></data>
+  <data name="AnnotationChanged" xml:space="preserve"><value>изменил(а) замечания</value></data>
+  <data name="Renamed" xml:space="preserve"><value>переименовал(а)</value></data>
+  <data name="MessageCreated" xml:space="preserve"><value>написал(а) сообщение</value></data>
+  <data name="AnnotationMessageDeleted" xml:space="preserve"><value>удалил(а) ответ в замечании</value></data>
+  <data name="AnnotationMessageAdded" xml:space="preserve"><value>добавил(а) ответ в замечании</value></data>
+  <data name="SignatureChanged" xml:space="preserve"><value>изменил(а) подписи</value></data>
+  <data name="Freezed" xml:space="preserve"><value>заморозил(а)</value></data>
+  <data name="StateReturnedAfterValidation" xml:space="preserve"><value>вернул(а) задание на доработку</value></data>
+  </root>

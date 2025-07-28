@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\Ascon.Pilot.SDK.NotificationsSample.ext2.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\Ascon.Pilot.SDK.NotificationsSample.ext2.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\Ascon.Pilot.SDK.NotificationsSample.ext2.csproj",
+        "projectName": "Ascon.Pilot.SDK.NotificationsSample.ext2",
+        "projectPath": "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\Ascon.Pilot.SDK.NotificationsSample.ext2.csproj",
+        "packagesPath": "C:\\Users\\Dokuchaev_ts\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Dokuchaev_ts\\Desktop\\Ascon.Pilot.SDK.NotificationsSample\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Dokuchaev_ts\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net481"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net481": {
+            "targetAlias": "net481",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net481": {
+          "targetAlias": "net481",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
