@@ -12,17 +12,17 @@
   <PropertyGroup>
     <RootNamespace />
   </PropertyGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="ConfigurationHelper.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Ascon.Pilot.SDK">
-      <HintPath>..\Новая папка\Ascon.Pilot.SDK.dll</HintPath>
+      <HintPath>..\Lib\Ascon.Pilot.SDK.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Core" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Новая папка\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 </Project>
