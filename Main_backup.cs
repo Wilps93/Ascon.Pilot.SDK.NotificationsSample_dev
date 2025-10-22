@@ -22,6 +22,9 @@ using Ascon.Pilot.SDK.HotKey;
 using Ascon.Pilot.SDK.Menu;
 using Ascon.Pilot.SDK.NotificationsSample;
 using Ascon.Pilot.SDK.ObjectCard;
+using Ascon.Pilot.SDK.Services;
+using Ascon.Pilot.SDK.Configuration;
+using Ascon.Pilot.SDK.Validation;
 using Newtonsoft.Json;
 
 [Export(typeof(IDataPlugin))]
@@ -31,47 +34,11 @@ using Newtonsoft.Json;
 [Export(typeof(IMenu<ObjectsViewContext>))]
 public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBuilder, IDataPlugin, IObserver<INotification>, IObjectCardHandler, IObjectModifier, IObjectBuilder, IMenu<ObjectsViewContext>, IHotKey<ObjectsViewContext>
 {
-	public static class RocketChatSettings
-	{
-		public const string BaseUrl = "http://192.168.10.180:3000";
+	// Удаляем старые настройки Rocket.Chat - теперь используем AppSettings
+	// public static class RocketChatSettings { ... }
 
-		public const string AuthToken = "YxGV8XDD9dBIRuKLn6nNOv1JeoXHF_anND0s58oS4xR";
-
-		public const string UserId = "PRGcw8PrY9YNyGfjo";
-	}
-
-	public static class PilotLogger
-	{
-		public static void Log(string message, string methodName, bool isVerbose, TimeSpan? elapsed = null)
-		{
-			string log = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {methodName}: {message}";
-			if (elapsed.HasValue)
-			{
-				log += $", Elapsed: {elapsed.Value.TotalMilliseconds:F3}ms";
-			}
-			Debug.WriteLine(log);
-		}
-
-		public static void LogError(string methodName, bool isVerbose, Exception ex, string message = null)
-		{
-			string log = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR {methodName}: {message ?? ex.Message}";
-			if (ex != null)
-			{
-				log += $"\nException: {ex}";
-			}
-			Debug.WriteLine(log);
-		}
-
-		public static void LogLoad(string objectId, string methodName, bool isVerbose, TimeSpan? elapsed = null)
-		{
-			string log = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {methodName}: Loading object {objectId}";
-			if (elapsed.HasValue)
-			{
-				log += $", Elapsed: {elapsed.Value.TotalMilliseconds:F3}ms";
-			}
-			Debug.WriteLine(log);
-		}
-	}
+	// Удаляем старый логгер - теперь используем LoggingService
+	// public static class PilotLogger { ... }
 
 	internal class FileExtensionHelper
 	{
@@ -89,7 +56,8 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 		}
 	}
 
-	private static readonly HttpClient _httpClient;
+	// Удаляем старый HttpClient - теперь используем ChatService
+	// private static readonly HttpClient _httpClient;
 
 	private readonly IObjectsRepository Repository;
 
@@ -98,6 +66,12 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 	private readonly IFileProvider _fileProvider;
 
 	private readonly IPilotStorageCommandController _PilotStorageCommandController;
+
+	// Новые сервисы
+	private readonly NotificationService _notificationService;
+	private readonly ChatService _chatService;
+	private readonly EmailService _emailService;
+	private bool _disposed = false;
 
 	private Guid taskDelete = new Guid("abdbe49a-7094-4084-9673-eb5fb3f95262");
 
@@ -227,10 +201,54 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 	[Obsolete]
 	public Main(IObjectsRepository repository, IObjectModifier modifier, IPilotStorageCommandController PilotStorageCommand, IFileProvider fileProvider)
 	{
-		Repository = repository;
-		_fileProvider = fileProvider;
-		_modifier = modifier;
-		_PilotStorageCommandController = PilotStorageCommand;
+		Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+		_fileProvider = fileProvider ?? throw new ArgumentNullException(nameof(fileProvider));
+		_modifier = modifier ?? throw new ArgumentNullException(nameof(modifier));
+		_PilotStorageCommandController = PilotStorageCommand ?? throw new ArgumentNullException(nameof(PilotStorageCommand));
+
+		// Инициализация новых сервисов
+		try
+		{
+			// Валидация конфигурации при запуске
+			var configResult = InputValidator.ValidateConfiguration();
+			if (!configResult.IsValid)
+			{
+				LoggingService.LogCritical($"Configuration validation failed: {InputValidator.GetValidationSummary(configResult)}", 
+					null, nameof(Main));
+				throw new InvalidOperationException("Configuration validation failed");
+			}
+
+			// Инициализация сервисов
+			_chatService = new ChatService();
+			_emailService = new EmailService();
+			_notificationService = new NotificationService(repository, modifier);
+
+			LoggingService.LogInfo("Main module initialized successfully", nameof(Main));
+
+			// Тест подключений
+			_ = Task.Run(async () =>
+			{
+				try
+				{
+					var chatConnected = await _chatService.TestConnectionAsync();
+					var emailConnected = await _emailService.TestConnectionAsync();
+
+					LoggingService.LogInfo($"Service connections - Chat: {(chatConnected ? "OK" : "FAIL")}, Email: {(emailConnected ? "OK" : "FAIL")}", 
+						nameof(Main));
+				}
+				catch (Exception ex)
+				{
+					LoggingService.LogError("Failed to test service connections", ex, nameof(Main));
+				}
+			});
+		}
+		catch (Exception ex)
+		{
+			LoggingService.LogCritical("Failed to initialize Main module", ex, nameof(Main));
+			throw;
+		}
+
+		// Подписка на уведомления
 		repository.SubscribeNotification(NotificationKind.ObjectCreated).Subscribe(this);
 		repository.SubscribeNotification(NotificationKind.ObjectAttributeChanged).Subscribe(this);
 		repository.SubscribeNotification(NotificationKind.ObjectSignatureChanged).Subscribe(this);
@@ -327,6 +345,13 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 
 	public void Dispose()
 	{
+		if (!_disposed)
+		{
+			_notificationService?.Dispose();
+			_chatService?.Dispose();
+			_emailService?.Dispose();
+			_disposed = true;
+		}
 	}
 
 	public string GetRedirectAddress(string NotificationType)
@@ -472,42 +497,37 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 
 	public async Task SendChatNotificationAsync(string chatName, string messageText, [CallerLineNumber] int sourceLineNumber = 0)
 	{
-		string redirectChatUser = GetRedirectAddress("chat");
-		if (redirectChatUser != null)
-		{
-			chatName = redirectChatUser;
-		}
-		if (Dns.GetHostName() == "Dokuchaevse" && redirectChatUser == null)
-		{
-			MessageBox.Show(messageText, chatName);
-			return;
-		}
 		try
 		{
-			ObjectLoader loader = new ObjectLoader(Repository);
-			Ascon.Pilot.SDK.IDataObject botData = await loader.Load(new Guid("f6f831df-0e77-4060-98d2-4f45b114750c"), 0L);
-			if (botData == null)
+			// Валидация входных данных
+			var validationResult = InputValidator.ValidateChatMessage(messageText);
+			if (!validationResult.IsValid)
 			{
-				PilotLogger.LogError("SendChatNotificationAsync", isVerbose: true, null, "Не удалось загрузить объект botData по GUID f6f831df-0e77-4060-98d2-4f45b114750c");
-				throw new Exception("Не удалось загрузить данные бота");
+				LoggingService.LogError($"Chat message validation failed: {string.Join(", ", validationResult.Errors)}", 
+					null, nameof(SendChatNotificationAsync));
+				return;
 			}
-			string userNick = ((!botData.Attributes.ContainsKey("userNick")) ? "UnknownNick" : botData.Attributes["userNick"]?.ToString());
-			string userName = ((!botData.Attributes.ContainsKey("UserName")) ? "UnknownName" : botData.Attributes["UserName"]?.ToString());
-			PilotLogger.Log("botData Attributes: " + string.Join(", ", botData.Attributes.Select((KeyValuePair<string, object> kvp) => $"{kvp.Key}: {kvp.Value}")), "SendChatNotificationAsync", isVerbose: true);
-			Console.WriteLine("userNick: " + userNick + ", userName: " + userName);
-			Console.WriteLine("Original message: " + messageText);
-			byte[] utf8Bytes = Encoding.UTF8.GetBytes(messageText);
-			string processedMessage = Encoding.UTF8.GetString(utf8Bytes);
-			if (processedMessage.Length > 2000)
+
+			// Обработка редиректа
+			string redirectChatUser = GetRedirectAddress("chat");
+			if (redirectChatUser != null)
 			{
-				processedMessage = processedMessage.Substring(0, 2000);
+				chatName = redirectChatUser;
 			}
-			processedMessage = ProcessMessage(processedMessage);
-			Console.WriteLine("Processed message: " + processedMessage);
-			await SendMessageAsync(await CreateChatRoomAsync(chatName), processedMessage);
+
+			// Специальная обработка для тестовой среды
+			if (Dns.GetHostName() == "Dokuchaevse" && redirectChatUser == null)
+			{
+				MessageBox.Show(messageText, chatName);
+				return;
+			}
+
+			// Использование нового ChatService
+			await _chatService.SendMessageAsync(chatName, messageText);
 		}
 		catch (Exception ex)
 		{
+			LoggingService.LogError($"Failed to send chat notification to {chatName}", ex, nameof(SendChatNotificationAsync));
 			MessageBox.Show("Не удалось отправить уведомление " + chatName + ": " + ex.Message, "Ошибка");
 			throw;
 		}
@@ -576,38 +596,40 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 
 	public void SendEmailNotification(string recipientEmail, string messageBody)
 	{
-		string redirectEmailAddress = GetRedirectAddress("email");
-		if (redirectEmailAddress != null)
-		{
-			recipientEmail = redirectEmailAddress;
-		}
 		try
 		{
-			MailMessage emailMessage = new MailMessage();
-			SmtpClient smtpClient = new SmtpClient();
-			try
+			// Валидация email
+			var emailValidation = InputValidator.ValidateEmail(recipientEmail);
+			if (!emailValidation.IsValid)
 			{
-				emailMessage.From = new MailAddress("pilot-ice@tomsmineral.ru");
-				emailMessage.To.Add(new MailAddress(recipientEmail));
-				emailMessage.Subject = "Рассылка уведомлений";
-				emailMessage.IsBodyHtml = true;
-				emailMessage.Body = messageBody;
-				smtpClient.Port = 587;
-				smtpClient.Host = "mail.tomsmineral.ru";
-				smtpClient.EnableSsl = true;
-				smtpClient.UseDefaultCredentials = false;
-				smtpClient.Credentials = new NetworkCredential("pilot-ice@tomsmineral.ru", "Sxk8uRfcWaxz7");
-				smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-				smtpClient.Send(emailMessage);
+				LoggingService.LogError($"Email validation failed: {string.Join(", ", emailValidation.Errors)}", 
+					null, nameof(SendEmailNotification));
+				return;
 			}
-			finally
+
+			// Обработка редиректа
+			string redirectEmailAddress = GetRedirectAddress("email");
+			if (redirectEmailAddress != null)
 			{
-				emailMessage.Dispose();
-				smtpClient.Dispose();
+				recipientEmail = redirectEmailAddress;
 			}
+
+			// Асинхронная отправка email
+			_ = Task.Run(async () =>
+			{
+				try
+				{
+					await _emailService.SendEmailAsync(recipientEmail, "Рассылка уведомлений", messageBody);
+				}
+				catch (Exception ex)
+				{
+					LoggingService.LogError($"Failed to send email to {recipientEmail}", ex, nameof(SendEmailNotification));
+				}
+			});
 		}
 		catch (Exception ex)
 		{
+			LoggingService.LogError($"Failed to initiate email sending to {recipientEmail}", ex, nameof(SendEmailNotification));
 			MessageBox.Show("Ошибка отправки письма: " + ex.Message, "Ошибка");
 			throw;
 		}
@@ -645,104 +667,16 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 	[Obsolete]
 	public async void OnNext(INotification value)
 	{
-		AddUser();
-		_ = value.NotificationName;
-		value.ChangesetId();
-		if ((DateTime.Now - timePastProjectCreate).TotalSeconds < 5.0)
-		{
-			return;
-		}
-		if (value.ChangeKind == NotificationKind.ObjectCreated && value.TypeId == 28)
-		{
-			timePastProjectCreate = DateTime.Now;
-		}
-		IEnumerable<IPerson> people = Repository.GetPeople();
-		IEnumerable<IOrganisationUnit> orgStruc = Repository.GetOrganisationUnits();
-		ObjectLoader loader = new ObjectLoader(Repository);
-		Repository.GetCurrentPerson();
-		Repository.GetDatabaseId();
-		Repository.GetTypes();
-		Ascon.Pilot.SDK.IDataObject obj = await loader.Load(value.ObjectId, 0L);
-		if (user[94].Length < 1)
-		{
-			Ascon.Pilot.SDK.IDataObject folderUser = await loader.Load(new Guid("d3496120-943a-4378-9641-e25787f74898"), 0L);
-			_ = (int)folderUser.Attributes["userId"];
-			_ = (string)folderUser.Attributes["userNick"];
-			_ = (string)folderUser.Attributes["UserName"];
-		}
-		Thread.Sleep(1);
-		int curentUserPosition = Repository.GetCurrentPerson().MainPosition.Position;
-		Repository.GetTypes();
-		Thread.Sleep(1);
-		string initiatorName = "";
-		string initiatorNick = "";
-		int executorId = 0;
-		string executorName = "";
-		string executorNick = "";
-		string executorMail = "";
-		orgStruc.ElementAt(108).Person();
 		try
 		{
-			if (obj.Attributes.ContainsKey("initiator"))
-			{
-				int initiatorId = ((int[])obj.Attributes["initiator"]).First();
-				initiatorName = user[int.Parse(initiatorId.ToString())][1];
-				initiatorNick = user[int.Parse(initiatorId.ToString())][0];
-				int person = orgStruc.ElementAt(initiatorId).Person();
-				people.ElementAt(person - 1).Email();
-			}
-			if (obj.Attributes.ContainsKey("executor"))
-			{
-				executorId = ((int[])obj.Attributes["executor"]).First();
-				executorName = user[int.Parse(executorId.ToString())][1];
-				executorNick = user[int.Parse(executorId.ToString())][0];
-				int person2 = orgStruc.ElementAt(executorId).Person();
-				executorMail = people.ElementAt(person2 - 1).Email();
-			}
+			// Используем новый NotificationService для обработки уведомлений
+			await _notificationService.ProcessNotificationAsync(value);
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
+			LoggingService.LogError("Failed to process notification in OnNext", ex, nameof(OnNext));
 		}
-		string ProjectDisplayName = "";
-		if (value.TypeId == 25)
-		{
-			ObjectLoader objectLoader = loader;
-			ObjectLoader objectLoader2 = loader;
-			ObjectLoader objectLoader3 = objectLoader;
-			ObjectLoader objectLoader4 = objectLoader2;
-			await objectLoader3.Load((await objectLoader4.Load((await loader.Load(value.ObjectId, 0L)).ParentId, 0L)).ParentId, 0L);
-		}
-		if (this.inProject != null)
-		{
-			ProjectDisplayName = " В проекте: " + this.inProject.DisplayName;
-		}
-		if (value.ChangeKind == NotificationKind.ObjectAttributeChanged && (value.TypeId == 34 || value.TypeId == 35 || value.TypeId == 79 || value.TypeId == 38 || value.TypeId == 20))
-		{
-			int idCurrentUser = Repository.GetCurrentPerson().MainPosition.Position;
-			try
-			{
-				if (!obj.Attributes.ContainsKey("responsible") || obj.Attributes["responsible"] == null)
-				{
-					MessageBox.Show("Не удалось добавить/удалить ответствнных за ведение документации");
-				}
-				else
-				{
-					for (int i = 0; i < obj.Access2.Count; i++)
-					{
-						if (obj.Access2.ElementAt(i).Access.IsInherited || ((int[])obj.Attributes["responsible"]).Contains(obj.Access2.ElementAt(i).OrgUnitId))
-						{
-							continue;
-						}
-						if (obj.Access2.ElementAt(i).RecordOwner != idCurrentUser && idCurrentUser != 6)
-						{
-							_ = obj.Access2.ElementAt(i).OrgUnitId;
-							_ = obj.Access2.ElementAt(i).RecordOwner;
-							obj = await loader.Load(value.ObjectId, 0L);
-							List<int> responsibleFromAccess = new List<int>();
-							foreach (IAccessRecord item in obj.Access2)
-							{
-								if (!item.Access.IsInherited)
-								{
+	}
 									responsibleFromAccess.Add(item.OrgUnitId);
 								}
 							}
@@ -2190,12 +2124,12 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 
 	public void OnError(Exception error)
 	{
-		MessageBox.Show("notifacation error");
+		LoggingService.LogError("Notification error occurred", error, nameof(OnError));
 	}
 
 	public void OnCompleted()
 	{
-		MessageBox.Show("notifacation completed");
+		LoggingService.LogInfo("Notification stream completed", nameof(OnCompleted));
 	}
 
 	public bool Handle(IAttributeModifier modifier, ObjectCardContext context)
