@@ -4,25 +4,90 @@
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <UseWindowsForms>True</UseWindowsForms>
     <TargetFramework>net481</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
     <LangVersion>12.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
     <RootNamespace />
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
-  <ItemGroup />
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Reference Include="Ascon.Pilot.SDK">
       <HintPath>..\Новая папка\Ascon.Pilot.SDK.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Text.RegularExpressions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\Новая папка\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="Configuration\AppSettings.cs" />
+    <Compile Include="Services\LoggingService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="Services\ChatService.cs" />
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Validation\InputValidator.cs" />
+    <Compile Include="Ascon.Pilot.SDK.CreateObjectSample\ObjectLoader.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\NotificationExtension.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\NotificationsHandler.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\DocumentHistoryViewModel.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\DocumentHistoryView.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\PilotNodeCreator.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\Resources.cs" />
+    <Compile Include="Ascon.Pilot.SDK.NotificationsSample\SearchResultsObserver.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Ascon.Pilot.SDK.NotificationsSample.Resources.resx" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Ascon.Pilot.SDK.NotificationsSample.Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Services\" />
+    <Folder Include="Validation\" />
+    <Folder Include="Tests\" />
+    <Folder Include="logs\" />
   </ItemGroup>
 </Project>
