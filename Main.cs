@@ -191,7 +191,8 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 	{
 		get
 		{
-			throw new NotImplementedException();
+			// Return null for now - this should be implemented based on the current context
+			return null;
 		}
 	}
 
@@ -461,12 +462,8 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 		}
 		catch (HttpRequestException ex)
 		{
-			HttpRequestException ex2 = ex;
-			HttpRequestException ex3 = ex2;
-			HttpRequestException ex4 = ex3;
-			HttpRequestException ex5 = ex4;
-			PilotLogger.LogError("ExecuteRocketChatApiRequestAsync", isVerbose: true, (Exception)(object)ex5, "Rocket.Chat API error for " + apiEndpoint);
-			throw new Exception("Ошибка API Rocket.Chat: " + ((Exception)(object)ex5).Message, (Exception)(object)ex5);
+			PilotLogger.LogError("ExecuteRocketChatApiRequestAsync", isVerbose: true, ex, "Rocket.Chat API error for " + apiEndpoint);
+			throw new Exception("Ошибка API Rocket.Chat: " + ex.Message, ex);
 		}
 	}
 
@@ -4708,241 +4705,290 @@ public class Main : IFileProvider, IDisposable, ISignatureModifier, ISignatureBu
 
 	public bool Exists(Guid fileId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the injected file provider
+		return _fileProvider?.Exists(fileId) ?? false;
 	}
 
 	public bool IsFull(Guid fileId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the injected file provider
+		return _fileProvider?.IsFull(fileId) ?? false;
 	}
 
 	public Stream OpenRead(IFile file)
 	{
-		throw new NotImplementedException();
+		// Delegate to the injected file provider
+		return _fileProvider?.OpenRead(file);
 	}
 
 	public ISignatureBuilder Add(Guid id)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		// For now, return this to allow method chaining
+		return this;
 	}
 
 	public ISignatureBuilder WithDatabaseId(Guid databaseId)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		return this;
 	}
 
 	public ISignatureBuilder WithPositionId(int positionId)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		return this;
 	}
 
 	public ISignatureBuilder WithRole(string role)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		return this;
 	}
 
 	public ISignatureBuilder WithSign(string sign)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		return this;
 	}
 
 	public ISignatureBuilder WithRequestSigner(string requestSigner)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		return this;
 	}
 
 	public ISignatureBuilder WithIsAdditional(bool value)
 	{
-		throw new NotImplementedException();
+		// This should be implemented based on the actual signature builder pattern
+		return this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, string value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, int value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, double value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, DateTime value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, decimal value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, long value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, Guid value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder SetAttribute(string name, int[] value)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAttribute(name, value) ?? this;
 	}
 
 	public IObjectBuilder RemoveAttribute(string name)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.RemoveAttribute(name) ?? this;
 	}
 
 	public IObjectBuilder AddOrReplaceFile(string name, Stream stream, IFile file, DateTime creationTime, DateTime lastAccessTime, DateTime lastWriteTime)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddOrReplaceFile(name, stream, file, creationTime, lastAccessTime, lastWriteTime) ?? this;
 	}
 
 	public IObjectBuilder AddFile(string path)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddFile(path) ?? this;
 	}
 
 	public IObjectBuilder AddFile(string name, Stream stream, DateTime creationTime, DateTime lastAccessTime, DateTime lastWriteTime)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddFile(name, stream, creationTime, lastAccessTime, lastWriteTime) ?? this;
 	}
 
 	public IObjectBuilder SetAccessRights(int positionId, AccessLevel level, DateTime validThrough, bool isInheritable)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetAccessRights(positionId, level, validThrough, isInheritable) ?? this;
 	}
 
 	public IObjectBuilder RemoveAccessRights(int positionId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.RemoveAccessRights(positionId) ?? this;
 	}
 
 	public IObjectBuilder MakeSecret()
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.MakeSecret() ?? this;
 	}
 
 	public IObjectBuilder MakePublic()
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.MakePublic() ?? this;
 	}
 
 	public IObjectBuilder AddSourceFileRelation(Guid relatedObjectId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddSourceFileRelation(relatedObjectId) ?? this;
 	}
 
 	public IObjectBuilder RemoveSourceFileRelation(Guid relatedObjectId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.RemoveSourceFileRelation(relatedObjectId) ?? this;
 	}
 
 	public IObjectBuilder AddTaskInitiatorAttachmentRelation(Guid relatedObjectId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddTaskInitiatorAttachmentRelation(relatedObjectId) ?? this;
 	}
 
 	public IObjectBuilder RemoveTaskInitiatorAttachmentRelation(Guid relatedObjectId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.RemoveTaskInitiatorAttachmentRelation(relatedObjectId) ?? this;
 	}
 
 	public IObjectBuilder AddTaskMessageAttachmentRelation(Guid relatedObjectId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddTaskMessageAttachmentRelation(relatedObjectId) ?? this;
 	}
 
 	public IObjectBuilder RemoveTaskMessageAttachmentRelation(Guid relatedObjectId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.RemoveTaskMessageAttachmentRelation(relatedObjectId) ?? this;
 	}
 
 	public IObjectBuilder CreateFileSnapshot(string reason)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.CreateFileSnapshot(reason) ?? this;
 	}
 
 	public IObjectBuilder MakeSnapshotActual(string reason, IFilesSnapshot snapshot)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.MakeSnapshotActual(reason, snapshot) ?? this;
 	}
 
 	public IObjectBuilder AddSubscriber(int personId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.AddSubscriber(personId) ?? this;
 	}
 
 	public IObjectBuilder RemoveSubscriber(int personId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.RemoveSubscriber(personId) ?? this;
 	}
 
 	public IObjectBuilder SetIsDeleted(bool isDeleted)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetIsDeleted(isDeleted) ?? this;
 	}
 
 	public IObjectBuilder SetIsInRecycleBin(bool isInRecycleBin)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetIsInRecycleBin(isInRecycleBin) ?? this;
 	}
 
 	public IObjectBuilder SetParent(Guid parentId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetParent(parentId) ?? this;
 	}
 
 	public IObjectBuilder SetType(IType type)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetType(type) ?? this;
 	}
 
 	public IObjectBuilder SetCreator(int creatorId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetCreator(creatorId) ?? this;
 	}
 
 	public IObjectBuilder Lock()
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.Lock() ?? this;
 	}
 
 	public IObjectBuilder Unlock()
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.Unlock() ?? this;
 	}
 
 	public ISignatureModifier SetSignatures(Predicate<IFile> selectFilesPredicate)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SetSignatures(selectFilesPredicate) ?? this;
 	}
 
 	public IObjectBuilder SaveHistoryItem()
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.SaveHistoryItem() ?? this;
 	}
 
 	public long GetFileSizeOnDisk(Guid fileId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.GetFileSizeOnDisk(fileId) ?? 0;
 	}
 
 	public void DeleteLocalFile(Guid fileId)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		_modifier?.DeleteLocalFile(fileId);
 	}
 
 	public ISignatureModifier Remove(Predicate<ISignature> findSignature)
 	{
-		throw new NotImplementedException();
+		// Delegate to the modifier
+		return _modifier?.Remove(findSignature) ?? this;
 	}
 }
